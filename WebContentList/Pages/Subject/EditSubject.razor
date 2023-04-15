@@ -1,0 +1,58 @@
+﻿@using WebContentList.Data
+
+@page "/editsubject/{id}"
+
+@inject SubjectsService SubjectsService
+@inject NavigationManager navigationManager
+
+<h3>@curSubject.Name bearbeiten</h3>
+
+@if (curSubject == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <form>
+        <input class="form-control" @bind="curSubject.SubjectId" hidden="true"/>
+        
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" @bind="curSubject.Name" autofocus="true" placeholder="Bezeichnung des Themas"/>
+        </div>
+    
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" @bind="curSubject.Description" placeholder="Beschreibung des Themas"/>
+        </div>
+
+        <button class="btn btn-primary" type="button" @onclick="UpdateSubject">Übernehmen</button>
+        <button class="btn btn-secondary" type="button" @onclick="CancelUpdate">Abbrechen</button>
+
+    </form>
+}
+
+@code {
+    //Die ID muss in der Form angegeben werden, da ansonsten kein Update sondern ein Anfügen erfolgt
+    [Parameter]
+    public string id { get; set; }
+
+    // Notwenig, um zu Anfang einen Container zu haben
+    Subject curSubject = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        curSubject = await SubjectsService.GetSubjectById(int.Parse(id));
+    }
+
+    protected async void UpdateSubject()
+    {
+        await SubjectsService.UpdateSubject(curSubject);
+        navigationManager.NavigateTo("subjectlist");
+    }
+
+    private void CancelUpdate()
+    {
+        navigationManager.NavigateTo("subjectlist");
+    }
+
+}

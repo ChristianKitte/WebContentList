@@ -1,0 +1,49 @@
+﻿@using WebContentList.Data
+
+@page "/deletesubject/{id}"
+
+@inject SubjectsService SubjectsService
+@inject NavigationManager navigationManager
+
+@if (curSubject == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <h3>Soll @curSubject.Name wirklich gelöscht werden?</h3>
+
+    <form>
+
+        <button class="btn btn-danger" type="button" @onclick="DeleteCurSubject">Thema endgültig löschen</button>
+        <button class="btn btn-secondary" type="button" @onclick="CancelDelete">Abbrechen</button>
+
+    </form>
+}
+
+@code {
+
+    [Parameter]
+    public string id { get; set; }
+
+    // Notwenig, um zu Anfang einen Kontainer zu haben
+    Subject curSubject = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        curSubject = await SubjectsService.GetSubjectById(int.Parse(id));
+    }
+
+    protected async void DeleteCurSubject()
+    {
+        await SubjectsService.DeleteSubject(curSubject);
+        navigationManager.NavigateTo("subjectlist");
+    }
+
+    private void CancelDelete()
+    {
+        navigationManager.NavigateTo("subjectlist");
+    }
+
+}

@@ -1,0 +1,49 @@
+﻿@using WebContentList.Data
+
+@page "/deletecontent/{id}"
+
+@inject ContentsService ContentsService
+@inject NavigationManager navigationManager
+
+@if (curContent == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <h3>Soll @curContent.Name wirklich gelöscht werden?</h3>
+
+    <form>
+
+        <button class="btn btn-danger" type="button" @onclick="DeleteCurContent">Inhalt endgültig löschen</button>
+        <button class="btn btn-secondary" type="button" @onclick="CancelDelete">Abbrechen</button>
+
+    </form>
+}
+
+@code {
+
+    [Parameter]
+    public string id { get; set; }
+
+    // Notwenig, um zu Anfang einen Kontainer zu haben
+    Content curContent = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        curContent = await ContentsService.GetContentById(int.Parse(id));
+    }
+
+    protected async void DeleteCurContent()
+    {
+        await ContentsService.DeleteContent(curContent);
+        navigationManager.NavigateTo("contentlist");
+    }
+
+    private void CancelDelete()
+    {
+        navigationManager.NavigateTo("contentlist");
+    }
+
+}

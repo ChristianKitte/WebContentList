@@ -1,0 +1,1 @@
+﻿https://www.jetbrains.com/help/rider/Connecting_to_SQL_Server_Express_LocalDB.html#step-2-create-the-localdb-connection

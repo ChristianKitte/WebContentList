@@ -1,0 +1,55 @@
+﻿@using WebContentList.Data
+
+@page "/subjectlist"
+@inject SubjectsService SubjectsService
+
+<h3>Themen</h3>
+
+@if (_subjects == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div>
+        <a class="btn btn-success" href="addsubject">Neues Thema...</a>
+    </div>
+
+    <div>
+        <ul class="list-group list-group-flush">
+            @foreach (var group in _subjects)
+            {
+                <li class="list-group-item">
+                    <div class="row">
+                        <div class="col-3">
+                            @group.Name (Default)
+                        </div>
+                        <div class="col-3">
+                            @group.Description
+                        </div>
+
+                        @if (!group.isDefault)
+                        {
+                            <div class="col-4">
+                                <a class="btn btn-primary" href="editsubject/@group.SubjectId">Bearbeiten</a>
+                                <a class="btn btn-danger" href="deletesubject/@group.SubjectId">Löschen</a>
+                            </div>
+                        }
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+}
+
+@code {
+    private List<Subject>? _subjects;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        _subjects = await SubjectsService.GetSubjectList();
+    }
+
+}

@@ -1,0 +1,86 @@
+﻿@using WebContentList.Data
+
+@page "/contentlist"
+
+@inject SubjectsService SubjectsService
+@inject ContentsService ContentsService
+
+<h3>Alle Inhalte</h3>
+
+@if (_subjects == null || _content == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div>
+        <a class="btn btn-success" href="addcontent">Neuer Inhalt...</a>
+    </div>
+
+    <div>
+        <select name="Gruppe">
+            <option value="-1" @onclick=@(() => GetVideosByGroup(-1)) @onclick:preventDefault="true">Alle</option>
+
+            @foreach (var group in _content)
+            {
+                <option value="@group.SubjectId" @onclick=@(() => GetVideosByGroup(group.SubjectId)) @onclick:preventDefault="true">@group.Name</option>
+            }
+        </select>
+    </div>
+
+    <div>
+        <ul class="list-group list-group-flush">
+            @foreach (var subject in _subjects)
+            {
+                <li class="list-group-item">
+                    <div>
+                        @if (subject.ShowPreview)
+                        {
+                            <iframe width="450" height="300" src="@subject.Url" allowfullscreen></iframe>
+                        }
+                        else
+                        {
+                            <p>@subject.Url</p>
+                        }
+
+                        <p>@subject.Name</p>
+                        <p>@subject.Description</p>
+                        
+                        <div class="col-4">
+                            <a class="btn btn-primary" href="@subject.Url">In neuer Seite öffnen..</a>
+                            <a class="btn btn-secondary" href="editcontent/@subject.ContentId">Bearbeiten</a>
+                            <a class="btn btn-danger" href="deletecontent/@subject.ContentId">Löschen</a>
+                        </div>
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+}
+
+
+@code {
+    private List<Subject>? _content;
+    private List<Content>? _subjects;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        _content = await SubjectsService.GetSubjectList();
+        _subjects = await ContentsService.GetContentList();
+    }
+
+    private async Task GetVideosByGroup(int groupId)
+    {
+        if (groupId == -1)
+        {
+            _subjects = await ContentsService.GetContentList();
+        }
+        else
+        {
+            _subjects = await ContentsService.GetContentListBySubject(groupId);
+        }
+    }
+
+}

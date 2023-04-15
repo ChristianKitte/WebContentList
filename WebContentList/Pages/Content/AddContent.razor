@@ -1,0 +1,92 @@
+﻿@using WebContentList.Data
+
+@page "/addcontent"
+
+@inject ContentsService ContentsService
+@inject SubjectsService SubjectsService
+@inject NavigationManager navigationManager
+
+<h3>Inhalt hinzufügen</h3>
+
+@if (_subjects == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <form>
+
+        <div class="form-group">
+            <label for="link">Link</label>
+            <input type="text" class="form-control" @bind="curContent.Url" id="link" placeholder="URL zum Inhalt" autofocus="autofocus">
+        </div>
+
+        <div class="form-group">
+            <label class="form-check-label" for="checkPreview">
+                Als Vorschau anzeigen?
+            </label>
+            <input class="form-check-input" type="checkbox" @bind="curContent.ShowPreview" id="checkPreview"/>
+        </div>
+
+        <div class="form-group">
+            <label class="form-check-label" for="themen">
+                Zu welchem Thema soll der Inhalt zugeordnet werden?
+            </label>
+            <div class="input-group">
+                <select class="custom-select" @bind="@curContent.SubjectId" id="themen">
+                    @foreach (var group in _subjects)
+                    {
+                        <option value="@group.SubjectId">@group.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="kurzbezeichnung">Kurzbezeichnung</label>
+            <input type="text" class="form-control" @bind="curContent.Name" id="kurzbezeichnung" placeholder="Kurzbezeichnung">
+        </div>
+
+        <div class="form-group">
+            <label for="beschreibung">Beschreibung</label>
+            <input type="text" class="form-control" @bind="curContent.Description" id="beschreibung" placeholder="Beschreibung">
+        </div>
+
+        <button class="btn btn-primary" type="button" @onclick="AddNewContent">Hinzufügen</button>
+        <button class="btn btn-secondary" type="button" @onclick="CancelAdd">Abbrechen</button>
+
+    </form>
+}
+
+@code {
+
+    // Notwenig, um zu Anfang einen Kontainer zu haben
+    private Content curContent = new();
+    private List<Subject>? _subjects;
+
+    private bool isValidSubject = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        _subjects = await SubjectsService.GetSubjectList();
+    }
+
+    protected async void AddNewContent()
+    {
+        if (curContent.SubjectId == 0)
+        {
+            isValidSubject = false;
+            return;
+        }
+
+        await ContentsService.AddContent(curContent);
+        navigationManager.NavigateTo("contentlist");
+    }
+
+    private void CancelAdd()
+    {
+        navigationManager.NavigateTo("contentlist");
+    }
+
+}
