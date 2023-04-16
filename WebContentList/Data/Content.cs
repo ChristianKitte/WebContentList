@@ -12,8 +12,6 @@ public class Content
 
     [Required] public int SubjectId { get; set; } = 0;
 
-    [ForeignKey("SubjectId")] public Subject Subject { get; set; }
-
     [Required] public string Url { get; set; } = string.Empty;
 
     [Required] public bool ShowPreview { get; set; } = true;

@@ -7,6 +7,11 @@
 
 <h3>Alle Inhalte</h3>
 
+<ConfirmDeleteDialog @ref=_confirmDialog
+                     ConfirmationChanged="ConfirmDelete_Click"
+                     ConfirmationMessage="Soll das Element wirklich gelöscht werden?">
+</ConfirmDeleteDialog>
+
 @if (_subjects == null || _content == null)
 {
     <p>Loading...</p>
@@ -30,8 +35,7 @@ else
 
     <div>
         <ul class="list-group list-group-flush">
-            @foreach (var subject in _subjects)
-            {
+            <Virtualize Items="_subjects" Context="subject">
                 <li class="list-group-item">
                     <div>
                         @if (subject.ShowPreview)
@@ -45,15 +49,15 @@ else
 
                         <p>@subject.Name</p>
                         <p>@subject.Description</p>
-                        
+
                         <div class="col-4">
                             <a class="btn btn-primary" href="@subject.Url">In neuer Seite öffnen..</a>
                             <a class="btn btn-secondary" href="editcontent/@subject.ContentId">Bearbeiten</a>
-                            <a class="btn btn-danger" href="deletecontent/@subject.ContentId">Löschen</a>
+                            <a class="btn btn-danger" @onclick="() => Delete_Click(subject.ContentId)">Löschen</a>
                         </div>
                     </div>
                 </li>
-            }
+            </Virtualize>
         </ul>
     </div>
 }
@@ -62,6 +66,11 @@ else
 @code {
     private List<Subject>? _content;
     private List<Content>? _subjects;
+
+    Content? curContent = null;
+    int curGroupID = -1;
+
+    private ConfirmDeleteDialog? _confirmDialog { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -73,6 +82,8 @@ else
 
     private async Task GetVideosByGroup(int groupId)
     {
+        curGroupID = groupId;
+
         if (groupId == -1)
         {
             _subjects = await ContentsService.GetContentList();
@@ -83,4 +94,20 @@ else
         }
     }
 
+    protected async void Delete_Click(int id)
+    {
+        curContent = await ContentsService.GetContentById(id);
+        _confirmDialog?.Show();
+    }
+
+    protected async Task ConfirmDelete_Click(bool deleteConfirmed)
+    {
+        if (deleteConfirmed && curContent != null)
+        {
+            await ContentsService.DeleteContent(curContent);
+            await GetVideosByGroup(curGroupID);
+
+            StateHasChanged();
+        }
+    }
 }

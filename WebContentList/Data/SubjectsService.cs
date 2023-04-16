@@ -20,7 +20,7 @@ public class SubjectsService
         if (curSubject == null)
         {
             curSubject = new Subject()
-                { Description = "ohne Zuordnung", isDefault = true, Name = name };
+            { Description = "ohne Zuordnung", isDefault = true, Name = name };
 
             _context.Subject.Add(curSubject);
         }
