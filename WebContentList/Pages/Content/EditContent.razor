@@ -3,7 +3,7 @@
 @page "/editcontent/{id}"
 
 @inject ContentsService ContentsService
-@inject SubjectsService SubjectsService
+@inject GroupService SubjectsService
 @inject NavigationManager navigationManager
 
 <h3>Inhalt bearbeiten</h3>
@@ -72,14 +72,14 @@ else
 
     // Notwenig, um zu Anfang einen Container zu haben
     private Content curContent = new();
-    private List<Subject>? _subjects;
+    private List<Group>? _subjects;
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
 
         curContent = await ContentsService.GetContentById(int.Parse(id));
-        _subjects = await SubjectsService.GetSubjectList();
+        _subjects = await SubjectsService.GetGroupList();
     }
 
     protected async void UpdateContent()

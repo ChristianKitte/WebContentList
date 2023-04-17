@@ -1,27 +1,27 @@
 ﻿@using WebContentList.Data
 
-@page "/editsubject/{id}"
+@page "/editgroup/{id}"
 
-@inject SubjectsService SubjectsService
+@inject GroupService GroupService
 @inject NavigationManager navigationManager
 
-<h3>@curSubject.Name bearbeiten</h3>
+<h3>@curGroup.Name bearbeiten</h3>
 
-@if (curSubject == null)
+@if (curGroup == null)
 {
     <p>Loading...</p>
 }
 else
 {
     <form>
-        <input class="form-control" @bind="curSubject.SubjectId" hidden="true"/>
-        
+        <input class="form-control" @bind="curGroup.SubjectId" hidden="true"/>
+
         <div class="input-group mb-3">
-            <input type="text" class="form-control" @bind="curSubject.Name" autofocus="true" placeholder="Bezeichnung des Themas"/>
+            <input type="text" class="form-control" @bind="curGroup.Name" autofocus="true" placeholder="Bezeichnung des Themas"/>
         </div>
-    
+
         <div class="input-group mb-3">
-            <input type="text" class="form-control" @bind="curSubject.Description" placeholder="Beschreibung des Themas"/>
+            <input type="text" class="form-control" @bind="curGroup.Description" placeholder="Beschreibung des Themas"/>
         </div>
 
         <button class="btn btn-primary" type="button" @onclick="UpdateSubject">Übernehmen</button>
@@ -36,23 +36,23 @@ else
     public string id { get; set; }
 
     // Notwenig, um zu Anfang einen Container zu haben
-    Subject curSubject = new();
+    Group curGroup = new();
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        curSubject = await SubjectsService.GetSubjectById(int.Parse(id));
+        curGroup = await GroupService.GetGroupById(int.Parse(id));
     }
 
     protected async void UpdateSubject()
     {
-        await SubjectsService.UpdateSubject(curSubject);
-        navigationManager.NavigateTo("subjectlist");
+        await GroupService.UpdateGroup(curGroup);
+        navigationManager.NavigateTo("grouplist");
     }
 
     private void CancelUpdate()
     {
-        navigationManager.NavigateTo("subjectlist");
+        navigationManager.NavigateTo("grouplist");
     }
 
 }

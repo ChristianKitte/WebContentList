@@ -10,7 +10,7 @@ namespace WebContentList.Data
         {
         }
 
-        public DbSet<Subject> Subject { get; set; }
+        public DbSet<Group> Group { get; set; }
         public DbSet<Content> Content { get; set; }
     }
 }

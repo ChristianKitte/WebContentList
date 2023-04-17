@@ -1,0 +1,75 @@
+﻿@using WebContentList.Data
+@using WebContentList.Shared
+
+@page "/grouplist"
+
+@inject GroupService GroupService
+@inject NavigationManager navigationManager
+
+<h3>Themen</h3>
+
+<ConfirmDeleteDialog @ref=_confirmDialog
+                     ConfirmationChanged="ConfirmDelete_Click"
+                     ConfirmationMessage="Soll die Gruppe wirklich gelöscht werden?">
+</ConfirmDeleteDialog>
+
+@if (_groups == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div>
+        <a class="btn btn-success" href="addgroup">Neue Gruppe...</a>
+    </div>
+
+    <div>
+        <ul class="list-group list-group-flush">
+            <Virtualize Items="_groups" Context="group">
+                <GroupListItem Group="group"
+                           EditRequest="(id) => Edit_Click(id)"
+                           DeleteRequest="(id) => Delete_Click(id)">
+
+                </GroupListItem>
+
+            </Virtualize>
+        </ul>
+    </div>
+}
+
+@code {
+    private List<Group>? _groups;
+
+    Group? curGroup = null;
+
+    private ConfirmDeleteDialog? _confirmDialog { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _groups = await GroupService.GetGroupList();
+        await base.OnInitializedAsync();
+    }
+
+    private void Edit_Click(int id)
+    {
+        navigationManager.NavigateTo($"editgroup/{id}");
+    }
+
+    protected async void Delete_Click(int id)
+    {
+        curGroup = await GroupService.GetGroupById(id);
+        _confirmDialog?.Show();
+    }
+
+    protected async Task ConfirmDelete_Click(bool deleteConfirmed)
+    {
+        if (deleteConfirmed && curGroup != null)
+        {
+            await GroupService.DeleteSubject(curGroup);
+            _groups = await GroupService.GetGroupList();
+
+            StateHasChanged();
+        }
+    }
+
+}

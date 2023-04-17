@@ -2,17 +2,18 @@
 
 @page "/contentlist"
 
-@inject SubjectsService SubjectsService
+@inject GroupService GroupService
 @inject ContentsService ContentsService
+@inject NavigationManager navigationManager
 
 <h3>Alle Inhalte</h3>
 
-<ConfirmDeleteDialog @ref=_confirmDialog
+<ConfirmDeleteDialog @ref=ConfirmDialog
                      ConfirmationChanged="ConfirmDelete_Click"
                      ConfirmationMessage="Soll das Element wirklich gelöscht werden?">
 </ConfirmDeleteDialog>
 
-@if (_subjects == null || _content == null)
+@if (_groups == null || _content == null)
 {
     <p>Loading...</p>
 }
@@ -26,7 +27,7 @@ else
         <select name="Gruppe">
             <option value="-1" @onclick=@(() => GetVideosByGroup(-1)) @onclick:preventDefault="true">Alle</option>
 
-            @foreach (var group in _content)
+            @foreach (var group in _groups)
             {
                 <option value="@group.SubjectId" @onclick=@(() => GetVideosByGroup(group.SubjectId)) @onclick:preventDefault="true">@group.Name</option>
             }
@@ -35,28 +36,12 @@ else
 
     <div>
         <ul class="list-group list-group-flush">
-            <Virtualize Items="_subjects" Context="subject">
-                <li class="list-group-item">
-                    <div>
-                        @if (subject.ShowPreview)
-                        {
-                            <iframe width="450" height="300" src="@subject.Url" allowfullscreen></iframe>
-                        }
-                        else
-                        {
-                            <p>@subject.Url</p>
-                        }
+            <Virtualize Items="_content" Context="content">
+                <ContentListItem Content="content"
+                             EditRequest="(id) => Edit_Click(id)"
+                             DeleteRequest="(id) => Delete_Click(id)">
 
-                        <p>@subject.Name</p>
-                        <p>@subject.Description</p>
-
-                        <div class="col-4">
-                            <a class="btn btn-primary" href="@subject.Url">In neuer Seite öffnen..</a>
-                            <a class="btn btn-secondary" href="editcontent/@subject.ContentId">Bearbeiten</a>
-                            <a class="btn btn-danger" @onclick="() => Delete_Click(subject.ContentId)">Löschen</a>
-                        </div>
-                    </div>
-                </li>
+                </ContentListItem>
             </Virtualize>
         </ul>
     </div>
@@ -64,50 +49,57 @@ else
 
 
 @code {
-    private List<Subject>? _content;
-    private List<Content>? _subjects;
+    private List<Group>? _groups;
+    private List<Content>? _content;
 
-    Content? curContent = null;
-    int curGroupID = -1;
+    Content? _curContent = null;
+    int _curGroupId = -1;
 
-    private ConfirmDeleteDialog? _confirmDialog { get; set; }
+    private ConfirmDeleteDialog? ConfirmDialog { get; set; }
+
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
 
-        _content = await SubjectsService.GetSubjectList();
-        _subjects = await ContentsService.GetContentList();
+        _groups = await GroupService.GetGroupList();
+        _content = await ContentsService.GetContentList();
     }
 
     private async Task GetVideosByGroup(int groupId)
     {
-        curGroupID = groupId;
+        _curGroupId = groupId;
 
         if (groupId == -1)
         {
-            _subjects = await ContentsService.GetContentList();
+            _content = await ContentsService.GetContentList();
         }
         else
         {
-            _subjects = await ContentsService.GetContentListBySubject(groupId);
+            _content = await ContentsService.GetContentListBySubject(groupId);
         }
+    }
+
+    private void Edit_Click(int id)
+    {
+        navigationManager.NavigateTo($"editcontent/{id}");
     }
 
     protected async void Delete_Click(int id)
     {
-        curContent = await ContentsService.GetContentById(id);
-        _confirmDialog?.Show();
+        _curContent = await ContentsService.GetContentById(id);
+        ConfirmDialog?.Show();
     }
 
     protected async Task ConfirmDelete_Click(bool deleteConfirmed)
     {
-        if (deleteConfirmed && curContent != null)
+        if (deleteConfirmed && _curContent != null)
         {
-            await ContentsService.DeleteContent(curContent);
-            await GetVideosByGroup(curGroupID);
+            await ContentsService.DeleteContent(_curContent);
+            await GetVideosByGroup(_curGroupId);
 
             StateHasChanged();
         }
     }
+
 }

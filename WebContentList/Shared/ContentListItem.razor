@@ -1,0 +1,47 @@
+﻿@if (Content != null)
+{
+    <li class="list-group-item">
+        <div>
+            @if (Content.ShowPreview)
+            {
+                <iframe width="450" height="300" src="@Content.Url" allowfullscreen></iframe>
+            }
+            else
+            {
+                <p>@Content.Url</p>
+            }
+
+            <p>@Content.Name</p>
+            <p>@Content.Description</p>
+
+            <div class="col-4">
+                <a class="btn btn-primary" href="@Content.Url" target="_blank">In neuer Seite öffnen..</a>
+                <a class="btn btn-secondary" @onclick="() => Edit_Click(Content.ContentId)">Bearbeiten</a>
+                <a class="btn btn-danger" @onclick="() => Delete_Click(Content.ContentId)">Löschen</a>
+            </div>
+        </div>
+    </li>
+}
+
+@code {
+
+    [Parameter]
+    public Content? Content { get; set; }
+
+    [Parameter]
+    public EventCallback<int> EditRequest { get; set; }
+
+    [Parameter]
+    public EventCallback<int> DeleteRequest { get; set; }
+
+    async void Edit_Click(int id)
+    {
+        await EditRequest.InvokeAsync(id);
+    }
+
+    async void Delete_Click(int id)
+    {
+        await DeleteRequest.InvokeAsync(id);
+    }
+
+}

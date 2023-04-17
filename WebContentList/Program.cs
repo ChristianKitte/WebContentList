@@ -24,7 +24,7 @@ builder.Services
     .AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 
 builder.Services.AddScoped<ContentsService>();
-builder.Services.AddScoped<SubjectsService>();
+builder.Services.AddScoped<GroupService>();
 
 var app = builder.Build();
 

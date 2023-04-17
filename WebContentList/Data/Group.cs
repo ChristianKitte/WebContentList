@@ -1,11 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Authorization;
+
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.AspNetCore.Authorization;
 
 namespace WebContentList.Data;
 
 [Authorize]
-public class Subject
+public class Group
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

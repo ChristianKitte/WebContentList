@@ -1,0 +1,44 @@
+﻿@if (Group != null)
+{
+    <li class="list-group-item">
+        <div class="row">
+            <div class="col-3">
+                @Group.Name (Default)
+            </div>
+            <div class="col-3">
+                @Group.Description
+            </div>
+
+            @if (!Group.isDefault)
+            {
+                <div class="col-4">
+                    <a class="btn btn-primary" @onclick="() => Edit_Click(Group.SubjectId)">Bearbeiten</a>
+                    <a class="btn btn-danger" @onclick="() => Delete_Click(Group.SubjectId)">Löschen</a>
+                </div>
+            }
+        </div>
+    </li>
+}
+
+@code {
+
+    [Parameter]
+    public Group? Group { get; set; }
+
+    [Parameter]
+    public EventCallback<int> EditRequest { get; set; }
+
+    [Parameter]
+    public EventCallback<int> DeleteRequest { get; set; }
+
+    async void Edit_Click(int id)
+    {
+        await EditRequest.InvokeAsync(id);
+    }
+
+    async void Delete_Click(int id)
+    {
+        await DeleteRequest.InvokeAsync(id);
+    }
+
+}

@@ -2,12 +2,12 @@
 
 namespace WebContentList.Data;
 
-public class SubjectsService
+public class GroupService
 {
     private readonly ApplicationDbContext _context;
     private int currentDefaultId;
 
-    public SubjectsService(ApplicationDbContext context)
+    public GroupService(ApplicationDbContext context)
     {
         _context = context;
         AdjustCommonGroup();
@@ -15,54 +15,54 @@ public class SubjectsService
 
     public void AdjustCommonGroup(string name = "ohne Zuordnung")
     {
-        Subject curSubject = _context.Subject.SingleOrDefault(subject => subject.isDefault == true);
+        Group curGroup = _context.Group.SingleOrDefault(group => group.isDefault == true);
 
-        if (curSubject == null)
+        if (curGroup == null)
         {
-            curSubject = new Subject()
+            curGroup = new Group()
             { Description = "ohne Zuordnung", isDefault = true, Name = name };
 
-            _context.Subject.Add(curSubject);
+            _context.Group.Add(curGroup);
         }
         else
         {
-            curSubject.Name = name;
+            curGroup.Name = name;
         }
 
         _context.SaveChanges();
 
-        currentDefaultId = curSubject.SubjectId;
+        currentDefaultId = curGroup.SubjectId;
     }
 
-    public async Task<List<Subject>> GetSubjectList()
+    public async Task<List<Group>> GetGroupList()
     {
-        return await _context.Subject.ToListAsync();
+        return await _context.Group.ToListAsync();
     }
 
-    public async Task<Subject> GetSubjectById(int SubjectId)
+    public async Task<Group> GetGroupById(int groupId)
     {
-        return await _context.Subject.SingleOrDefaultAsync(subject => subject.SubjectId == SubjectId);
+        return await _context.Group.SingleOrDefaultAsync(group => group.SubjectId == groupId);
     }
 
-    public async Task<bool> UpdateSubject(Subject subject)
+    public async Task<bool> UpdateGroup(Group group)
     {
-        _context.Subject.Update(subject);
+        _context.Group.Update(group);
         await _context.SaveChangesAsync();
 
         return true;
     }
 
-    public async Task<bool> AddSubject(Subject subject)
+    public async Task<bool> AddGroup(Group group)
     {
-        await _context.Subject.AddAsync(subject);
+        await _context.Group.AddAsync(group);
         await _context.SaveChangesAsync();
 
         return true;
     }
 
-    public async Task<bool> DeleteSubject(Subject subject)
+    public async Task<bool> DeleteSubject(Group group)
     {
-        if (subject.isDefault)
+        if (group.isDefault)
         {
             return true;
         }
@@ -74,7 +74,7 @@ public class SubjectsService
 
             // Inhalte mit der zur löschenden Gruppe auf die default Gruppe umlenken
             List<Content> _content = new List<Content>();
-            _content = await _context.Content.Where(video => video.SubjectId == subject.SubjectId)
+            _content = await _context.Content.Where(video => video.SubjectId == group.SubjectId)
                 .ToListAsync<Content>();
 
             foreach (var item in _content)
@@ -83,7 +83,7 @@ public class SubjectsService
             }
 
             // Gruppe löschen
-            _context.Subject.Remove(subject);
+            _context.Group.Remove(group);
             await _context.SaveChangesAsync();
 
             return true;

@@ -1,8 +1,8 @@
 ﻿@using WebContentList.Data
 
-@page "/addsubject"
+@page "/addgroup"
 
-@inject SubjectsService SubjectsService
+@inject GroupService GroupService
 @inject NavigationManager navigationManager
 
 <h3>Eine neues Thema hinzufügen</h3>
@@ -10,11 +10,11 @@
 <form>
 
     <div class="input-group mb-3">
-        <input type="text" class="form-control" @bind="curSubject.Name" autofocus="true" placeholder="Bezeichnung des Themas"/>
+        <input type="text" class="form-control" @bind="curGroup.Name" autofocus="true" placeholder="Bezeichnung des Themas"/>
     </div>
-    
+
     <div class="input-group mb-3">
-        <input type="text" class="form-control" @bind="curSubject.Description" placeholder="Beschreibung des Themas"/>
+        <input type="text" class="form-control" @bind="curGroup.Description" placeholder="Beschreibung des Themas"/>
     </div>
 
     <button class="btn btn-primary" type="button" @onclick="AddNewSubject">Hinzufügen</button>
@@ -25,17 +25,17 @@
 @code {
 
     // Notwenig, um zu Anfang einen Kontainer zu haben
-    Subject curSubject = new();
+    Group curGroup = new();
 
     protected async void AddNewSubject()
     {
-        await SubjectsService.AddSubject(curSubject);
-        navigationManager.NavigateTo("subjectlist");
+        await GroupService.AddGroup(curGroup);
+        navigationManager.NavigateTo("grouplist");
     }
 
     private void CancelAdd()
     {
-        navigationManager.NavigateTo("subjectlist");
+        navigationManager.NavigateTo("grouplist");
     }
 
 }
