@@ -1,26 +1,26 @@
 ﻿@if (Content != null)
 {
-    <li class="list-group-item">
-        <div>
+    <div class="card" style="width:25rem;height:auto;padding:5px;margin:5px;">
+        <div class="card-body">
+            <h5 class="card-title">@Content.Name</h5>
+            <p class="card-text">@Content.Description</p>
             @if (Content.ShowPreview)
             {
-                <iframe width="450" height="300" src="@Content.Url" allowfullscreen></iframe>
+                <div style="width:80%;height:auto;align-content:strech;">
+                    <iframe width="100%" src="@Content.Url" allowfullscreen></iframe>
+                </div>
             }
             else
             {
                 <p>@Content.Url</p>
             }
-
-            <p>@Content.Name</p>
-            <p>@Content.Description</p>
-
-            <div class="col-4">
-                <a class="btn btn-primary" href="@Content.Url" target="_blank">In neuer Seite öffnen..</a>
+            <div class="col-3">
+                <a class="btn btn-primary" href="@Content.Url" target="_blank">Öffnen</a>
                 <a class="btn btn-secondary" @onclick="() => Edit_Click(Content.ContentId)">Bearbeiten</a>
                 <a class="btn btn-danger" @onclick="() => Delete_Click(Content.ContentId)">Löschen</a>
             </div>
         </div>
-    </li>
+    </div>
 }
 
 @code {

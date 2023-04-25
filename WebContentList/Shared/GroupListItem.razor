@@ -1,23 +1,15 @@
 ﻿@if (Group != null)
 {
-    <li class="list-group-item">
-        <div class="row">
-            <div class="col-3">
-                @Group.Name (Default)
+    <div class="card" style="width: 18rem;padding: 5px;margin:5px;">
+        <div class="card-body">
+            <h5 class="card-title">@Group.Name</h5>
+            <p class="card-text">@Group.Description</p>
+            <div class="col-4">
+                <a class="btn btn-primary" @onclick="() => Edit_Click(Group.SubjectId)">Bearbeiten</a>
+                <a class="btn btn-danger" @onclick="() => Delete_Click(Group.SubjectId)">Löschen</a>
             </div>
-            <div class="col-3">
-                @Group.Description
-            </div>
-
-            @if (!Group.isDefault)
-            {
-                <div class="col-4">
-                    <a class="btn btn-primary" @onclick="() => Edit_Click(Group.SubjectId)">Bearbeiten</a>
-                    <a class="btn btn-danger" @onclick="() => Delete_Click(Group.SubjectId)">Löschen</a>
-                </div>
-            }
         </div>
-    </li>
+    </div>
 }
 
 @code {

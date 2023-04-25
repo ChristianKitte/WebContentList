@@ -23,17 +23,14 @@ else
         <a class="btn btn-success" href="addgroup">Neue Gruppe...</a>
     </div>
 
-    <div>
-        <ul class="list-group list-group-flush">
-            <Virtualize Items="_groups" Context="group">
-                <GroupListItem Group="group"
-                           EditRequest="(id) => Edit_Click(id)"
-                           DeleteRequest="(id) => Delete_Click(id)">
+    <div class="d-flex flex-wrap" style="overflow-y:scroll" tabindex="-1">
+        <Virtualize Items="_groups" Context="group">
+            <GroupListItem Group="group"
+                       EditRequest="(id) => Edit_Click(id)"
+                       DeleteRequest="(id) => Delete_Click(id)">
 
-                </GroupListItem>
-
-            </Virtualize>
-        </ul>
+            </GroupListItem>
+        </Virtualize>
     </div>
 }
 
